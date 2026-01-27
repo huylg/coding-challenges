@@ -7,16 +7,16 @@ todos:
     status: completed
   - id: server-core
     content: Implement Bun WebSocket server + sqlite persistence
-    status: in_progress
+    status: completed
   - id: client-core
     content: Implement Flutter mobile client and live leaderboard
-    status: pending
+    status: completed
   - id: ai-log
     content: Add AI collaboration notes and verification steps
-    status: pending
+    status: completed
   - id: docs
     content: Add run instructions and test notes
-    status: pending
+    status: completed
 isProject: false
 ---
 
