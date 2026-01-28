@@ -1,12 +1,20 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import type { Database } from "bun:sqlite";
 import {
+  advanceParticipantProgress,
   createDatabase,
   ensureParticipant,
+  ensureParticipantProgress,
   ensureSession,
   getLeaderboard,
+  getOptionsForQuestion,
+  getParticipantProgress,
+  getQuestionByIndex,
+  getQuestionCount,
   incrementScore,
   insertAnswer,
+  isOptionCorrect,
+  seedQuestions,
 } from "../src/db";
 
 let db: Database;
@@ -59,7 +67,7 @@ test("incrementScore returns 0 for missing participant", () => {
 test("insertAnswer persists answer with correctness", () => {
   ensureSession(db, "quiz-1");
   ensureParticipant(db, "quiz-1", "alice");
-  insertAnswer(db, "quiz-1", "alice", "q1", "42", true);
+  insertAnswer(db, "quiz-1", "alice", "q1", "q1_b", true);
   const row = db
     .prepare(
       `
@@ -74,7 +82,7 @@ test("insertAnswer persists answer with correctness", () => {
     is_correct: number;
   };
   expect(row.question_id).toBe("q1");
-  expect(row.answer_text).toBe("42");
+  expect(row.answer_text).toBe("q1_b");
   expect(row.is_correct).toBe(1);
 });
 
@@ -110,4 +118,32 @@ test("getLeaderboard orders by score then join time", () => {
     "alice",
     "bob",
   ]);
+});
+
+test("seedQuestions inserts 100 questions", () => {
+  seedQuestions(db);
+  const count = getQuestionCount(db);
+  expect(count).toBe(100);
+});
+
+test("getQuestionByIndex returns question and options", () => {
+  seedQuestions(db);
+  const question = getQuestionByIndex(db, 0);
+  expect(question?.id).toBe("q1");
+  const options = getOptionsForQuestion(db, "q1");
+  expect(options.length).toBe(4);
+});
+
+test("isOptionCorrect returns true for correct option", () => {
+  seedQuestions(db);
+  const isCorrect = isOptionCorrect(db, "q1", "q1_b");
+  expect(isCorrect).toBe(true);
+});
+
+test("participant progress advances on request", () => {
+  ensureSession(db, "quiz-1");
+  ensureParticipantProgress(db, "quiz-1", "alice");
+  expect(getParticipantProgress(db, "quiz-1", "alice")).toBe(0);
+  advanceParticipantProgress(db, "quiz-1", "alice");
+  expect(getParticipantProgress(db, "quiz-1", "alice")).toBe(1);
 });

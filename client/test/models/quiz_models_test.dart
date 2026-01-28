@@ -30,4 +30,27 @@ void main() {
     expect(update.quizId, "quiz-1");
     expect(update.leaderboard.length, 2);
   });
+
+  test("QuestionOption.fromJson parses defaults", () {
+    final option = QuestionOption.fromJson({});
+    expect(option.id, "");
+    expect(option.text, "");
+  });
+
+  test("QuestionMessage.fromJson parses options", () {
+    final question = QuestionMessage.fromJson({
+      "quizId": "quiz-1",
+      "questionId": "q10",
+      "prompt": "What is 4 + 6?",
+      "options": [
+        {"id": "q10_a", "text": "9"},
+        {"id": "q10_b", "text": "10"},
+        {"id": "q10_c", "text": "11"},
+        "skip",
+      ],
+    });
+    expect(question.quizId, "quiz-1");
+    expect(question.questionId, "q10");
+    expect(question.options.length, 3);
+  });
 }

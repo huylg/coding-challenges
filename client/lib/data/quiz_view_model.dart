@@ -30,6 +30,8 @@ class QuizViewModel extends ChangeNotifier {
   String? username;
   Uri? _serverUri;
   List<LeaderboardEntry> leaderboard = const [];
+  QuestionMessage? currentQuestion;
+  String? selectedOptionId;
 
   bool get isInSession => quizId != null && username != null;
 
@@ -54,22 +56,29 @@ class QuizViewModel extends ChangeNotifier {
     await _connectAndJoin();
   }
 
-  void submitAnswer({
-    required String questionId,
-    required String answer,
-    required bool isCorrect,
-  }) {
+  void selectOption(String? optionId) {
+    selectedOptionId = optionId;
+    notifyListeners();
+  }
+
+  void submitSelectedAnswer() {
     if (!isInSession) {
+      return;
+    }
+    final question = currentQuestion;
+    final optionId = selectedOptionId;
+    if (question == null || optionId == null || optionId.isEmpty) {
       return;
     }
     _client.send({
       "type": "answer",
       "quizId": quizId,
       "username": username,
-      "questionId": questionId.trim(),
-      "answer": answer.trim(),
-      "isCorrect": isCorrect,
+      "questionId": question.questionId,
+      "optionId": optionId,
     });
+    selectedOptionId = null;
+    notifyListeners();
   }
 
   @override
@@ -139,6 +148,19 @@ class QuizViewModel extends ChangeNotifier {
     if (type == "leaderboard_update") {
       final update = LeaderboardUpdate.fromJson(message);
       leaderboard = update.leaderboard;
+      notifyListeners();
+      return;
+    }
+    if (type == "question") {
+      final question = QuestionMessage.fromJson(message);
+      currentQuestion = question;
+      selectedOptionId = null;
+      notifyListeners();
+      return;
+    }
+    if (type == "quiz_complete") {
+      currentQuestion = null;
+      selectedOptionId = null;
       notifyListeners();
       return;
     }

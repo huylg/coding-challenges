@@ -116,7 +116,7 @@ void main() {
     expect(client.sentMessages.single, expectedJoinMessage);
   });
 
-  test("submitAnswer sends trimmed answer payload", () async {
+  test("submitSelectedAnswer sends answer payload", () async {
     final client = FakeQuizWebSocketClient();
     final model = QuizViewModel(client: client);
 
@@ -126,19 +126,29 @@ void main() {
       username: "alice",
     );
 
-    model.submitAnswer(
-      questionId: " q1 ",
-      answer: " 42 ",
-      isCorrect: true,
-    );
+    client.emitMessage({
+      "type": "question",
+      "quizId": "quiz-1",
+      "questionId": "q1",
+      "prompt": "What is 1 + 1?",
+      "options": [
+        {"id": "q1_a", "text": "1"},
+        {"id": "q1_b", "text": "2"},
+        {"id": "q1_c", "text": "3"},
+        {"id": "q1_d", "text": "4"},
+      ],
+    });
+    await _flushMicrotasks();
+
+    model.selectOption("q1_b");
+    model.submitSelectedAnswer();
 
     const expectedAnswerMessage = {
       "type": "answer",
       "quizId": "quiz-1",
       "username": "alice",
       "questionId": "q1",
-      "answer": "42",
-      "isCorrect": true,
+      "optionId": "q1_b",
     };
     expect(client.sentMessages.last, expectedAnswerMessage);
   });
@@ -165,6 +175,34 @@ void main() {
     expect(model.leaderboard.length, 1);
     expect(model.leaderboard.first.username, "alice");
     expect(model.leaderboard.first.score, 2);
+  });
+
+  test("question message updates current question", () async {
+    final client = FakeQuizWebSocketClient();
+    final model = QuizViewModel(client: client);
+
+    await model.joinQuiz(
+      serverUrl: "ws://localhost:3000",
+      quizId: "quiz-1",
+      username: "alice",
+    );
+
+    client.emitMessage({
+      "type": "question",
+      "quizId": "quiz-1",
+      "questionId": "q5",
+      "prompt": "What is 2 + 3?",
+      "options": [
+        {"id": "q5_a", "text": "4"},
+        {"id": "q5_b", "text": "5"},
+        {"id": "q5_c", "text": "6"},
+        {"id": "q5_d", "text": "7"},
+      ],
+    });
+    await _flushMicrotasks();
+
+    expect(model.currentQuestion?.questionId, "q5");
+    expect(model.currentQuestion?.options.length, 4);
   });
 
   test("error message sets status and message", () async {

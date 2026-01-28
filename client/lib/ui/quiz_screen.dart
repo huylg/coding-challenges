@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../data/quiz_view_model.dart";
+import "../models/quiz_models.dart";
 import "leaderboard_widget.dart";
 
 // AI-assisted section: Cursor AI helped outline a Flutter screen layout and
@@ -19,9 +20,6 @@ class _QuizScreenState extends State<QuizScreen> {
   late final TextEditingController _serverController;
   late final TextEditingController _quizIdController;
   late final TextEditingController _usernameController;
-  late final TextEditingController _questionIdController;
-  late final TextEditingController _answerController;
-  bool _isCorrect = false;
 
   @override
   void initState() {
@@ -30,8 +28,6 @@ class _QuizScreenState extends State<QuizScreen> {
     _serverController = TextEditingController(text: "ws://localhost:3000");
     _quizIdController = TextEditingController();
     _usernameController = TextEditingController();
-    _questionIdController = TextEditingController(text: "q1");
-    _answerController = TextEditingController();
   }
 
   @override
@@ -40,8 +36,6 @@ class _QuizScreenState extends State<QuizScreen> {
     _serverController.dispose();
     _quizIdController.dispose();
     _usernameController.dispose();
-    _questionIdController.dispose();
-    _answerController.dispose();
     super.dispose();
   }
 
@@ -72,15 +66,18 @@ class _QuizScreenState extends State<QuizScreen> {
                 if (_viewModel.isInSession) ...[
                   LeaderboardWidget(leaderboard: _viewModel.leaderboard),
                   const SizedBox(height: 24),
-                  _AnswerSection(
-                    questionIdController: _questionIdController,
-                    answerController: _answerController,
-                    isCorrect: _isCorrect,
-                    onCorrectChanged: (value) {
-                      setState(() => _isCorrect = value);
-                    },
-                    onSubmit: _handleSubmitAnswer,
-                  ),
+                  if (_viewModel.currentQuestion != null)
+                    _QuestionSection(
+                      question: _viewModel.currentQuestion!,
+                      selectedOptionId: _viewModel.selectedOptionId,
+                      onOptionSelected: _viewModel.selectOption,
+                      onSubmit: _viewModel.submitSelectedAnswer,
+                    )
+                  else
+                    Text(
+                      "Waiting for the next question...",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                 ],
               ],
             ),
@@ -95,14 +92,6 @@ class _QuizScreenState extends State<QuizScreen> {
       serverUrl: _serverController.text,
       quizId: _quizIdController.text,
       username: _usernameController.text,
-    );
-  }
-
-  void _handleSubmitAnswer() {
-    _viewModel.submitAnswer(
-      questionId: _questionIdController.text,
-      answer: _answerController.text,
-      isCorrect: _isCorrect,
     );
   }
 }
@@ -205,56 +194,47 @@ class _JoinSection extends StatelessWidget {
   }
 }
 
-class _AnswerSection extends StatelessWidget {
-  const _AnswerSection({
-    required this.questionIdController,
-    required this.answerController,
-    required this.isCorrect,
-    required this.onCorrectChanged,
+class _QuestionSection extends StatelessWidget {
+  const _QuestionSection({
+    required this.question,
+    required this.selectedOptionId,
+    required this.onOptionSelected,
     required this.onSubmit,
   });
 
-  final TextEditingController questionIdController;
-  final TextEditingController answerController;
-  final bool isCorrect;
-  final ValueChanged<bool> onCorrectChanged;
+  final QuestionMessage question;
+  final String? selectedOptionId;
+  final ValueChanged<String?> onOptionSelected;
   final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
+    final isSubmitEnabled = selectedOptionId != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          "Submit answer",
+          "Question",
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: questionIdController,
-          decoration: const InputDecoration(
-            labelText: "Question ID",
-            border: OutlineInputBorder(),
-          ),
+        const SizedBox(height: 8),
+        Text(
+          question.prompt,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: 12),
-        TextField(
-          controller: answerController,
-          decoration: const InputDecoration(
-            labelText: "Answer",
-            border: OutlineInputBorder(),
+        ...question.options.map(
+          (option) => RadioListTile<String>(
+            value: option.id,
+            groupValue: selectedOptionId,
+            title: Text(option.text),
+            onChanged: onOptionSelected,
           ),
-        ),
-        const SizedBox(height: 12),
-        SwitchListTile(
-          value: isCorrect,
-          onChanged: onCorrectChanged,
-          title: const Text("Mark as correct"),
         ),
         const SizedBox(height: 12),
         ElevatedButton(
-          onPressed: onSubmit,
-          child: const Text("Send answer"),
+          onPressed: isSubmitEnabled ? onSubmit : null,
+          child: const Text("Submit answer"),
         ),
       ],
     );

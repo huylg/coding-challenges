@@ -1,10 +1,12 @@
-import { createDatabase } from "./db";
+import { createDatabase, seedQuestions } from "./db";
 import { handleAnswer, handleJoin } from "./quiz_service";
 import type {
   AnswerMessage,
   ClientMessage,
   JoinMessage,
   LeaderboardUpdateMessage,
+  QuestionMessage,
+  QuizCompleteMessage,
   ServerMessage,
 } from "./models";
 import type { ServerWebSocket } from "bun";
@@ -20,6 +22,7 @@ interface ConnectionData {
 }
 
 const db = createDatabase();
+seedQuestions(db);
 const sessions = new Map<string, Set<ServerWebSocket<ConnectionData>>>();
 
 const logEvent = (event: string, data: Record<string, unknown> = {}) => {
@@ -90,6 +93,21 @@ const broadcastLeaderboard = (
   sockets.forEach((socket) => socket.send(body));
 };
 
+const sendQuestion = (
+  ws: ServerWebSocket<ConnectionData>,
+  payload: Omit<QuestionMessage, "type">
+) => {
+  sendMessage(ws, { type: "question", ...payload });
+};
+
+const sendQuizComplete = (
+  ws: ServerWebSocket<ConnectionData>,
+  quizId: string
+) => {
+  const payload: QuizCompleteMessage = { type: "quiz_complete", quizId };
+  sendMessage(ws, payload);
+};
+
 const parseMessage = (raw: string | Uint8Array) => {
   const text =
     typeof raw === "string" ? raw : new TextDecoder().decode(raw);
@@ -107,8 +125,7 @@ const isAnswerMessage = (message: ClientMessage): message is AnswerMessage =>
   typeof message.quizId === "string" &&
   typeof message.username === "string" &&
   typeof message.questionId === "string" &&
-  typeof message.answer === "string" &&
-  typeof message.isCorrect === "boolean";
+  typeof message.optionId === "string";
 
 const handleClientMessage = (
   ws: ServerWebSocket<ConnectionData>,
@@ -118,13 +135,22 @@ const handleClientMessage = (
     ws.data.quizId = message.quizId;
     ws.data.username = message.username;
     attachToSession(ws, message.quizId);
-    const leaderboard = handleJoin(db, message.quizId, message.username);
+    const { leaderboard, question } = handleJoin(
+      db,
+      message.quizId,
+      message.username
+    );
     sendMessage(ws, {
       type: "joined",
       quizId: message.quizId,
       username: message.username,
     });
     broadcastLeaderboard(message.quizId, leaderboard);
+    if (question) {
+      sendQuestion(ws, { quizId: message.quizId, ...question });
+    } else {
+      sendQuizComplete(ws, message.quizId);
+    }
     logEvent("join", { quizId: message.quizId, username: message.username });
     return;
   }
@@ -134,19 +160,23 @@ const handleClientMessage = (
       sendError(ws, "quiz_mismatch", "Quiz ID does not match session.");
       return;
     }
-    const leaderboard = handleAnswer(
+    const { leaderboard, question, isCorrect } = handleAnswer(
       db,
       message.quizId,
       message.username,
       message.questionId,
-      message.answer,
-      message.isCorrect
+      message.optionId
     );
     broadcastLeaderboard(message.quizId, leaderboard);
+    if (question) {
+      sendQuestion(ws, { quizId: message.quizId, ...question });
+    } else {
+      sendQuizComplete(ws, message.quizId);
+    }
     logEvent("answer", {
       quizId: message.quizId,
       username: message.username,
-      isCorrect: message.isCorrect,
+      isCorrect,
     });
     return;
   }

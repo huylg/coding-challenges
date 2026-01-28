@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import type { Database } from "bun:sqlite";
-import { createDatabase } from "../src/db";
+import { createDatabase, seedQuestions } from "../src/db";
 import { handleAnswer, handleJoin } from "../src/quiz_service";
 
 let db: Database;
 
 beforeEach(() => {
   db = createDatabase({ dbPath: ":memory:" });
+  seedQuestions(db);
 });
 
 afterEach(() => {
@@ -14,10 +15,11 @@ afterEach(() => {
 });
 
 test("handleJoin creates participant and returns leaderboard", () => {
-  const leaderboard = handleJoin(db, "quiz-1", "alice");
-  expect(leaderboard).toEqual([
+  const result = handleJoin(db, "quiz-1", "alice");
+  expect(result.leaderboard).toEqual([
     { username: "alice", score: 0 },
   ]);
+  expect(result.question?.questionId).toBe("q1");
 });
 
 test("handleJoin is idempotent per user", () => {
@@ -33,31 +35,30 @@ test("handleJoin is idempotent per user", () => {
 });
 
 test("handleAnswer increments score for correct answers", () => {
-  handleAnswer(db, "quiz-1", "alice", "q1", "42", true);
-  handleAnswer(db, "quiz-1", "alice", "q2", "43", true);
-  const leaderboard = handleAnswer(
+  handleAnswer(db, "quiz-1", "alice", "q1", "q1_b");
+  handleAnswer(db, "quiz-1", "alice", "q2", "q2_b");
+  const result = handleAnswer(
     db,
     "quiz-1",
     "alice",
     "q3",
-    "44",
-    false
+    "q3_a"
   );
-  expect(leaderboard).toEqual([
+  expect(result.isCorrect).toBe(false);
+  expect(result.leaderboard).toEqual([
     { username: "alice", score: 2 },
   ]);
 });
 
 test("handleAnswer creates participant for new user", () => {
-  const leaderboard = handleAnswer(
+  const result = handleAnswer(
     db,
     "quiz-1",
     "bob",
     "q1",
-    "42",
-    false
+    "q1_a"
   );
-  expect(leaderboard).toEqual([
+  expect(result.leaderboard).toEqual([
     { username: "bob", score: 0 },
   ]);
 });
