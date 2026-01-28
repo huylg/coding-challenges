@@ -229,6 +229,7 @@ class _QuestionSection extends StatelessWidget {
             groupValue: selectedOptionId,
             title: Text(option.text),
             onChanged: onOptionSelected,
+            toggleable: true,
           ),
         ),
         const SizedBox(height: 12),
