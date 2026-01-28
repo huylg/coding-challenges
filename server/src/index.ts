@@ -154,7 +154,7 @@ const handleClientMessage = (
   sendError(ws, "invalid_message", "Unsupported message shape.");
 };
 
-const PORT = 3000;
+const PORT = Number.parseInt(process.env.PORT ?? "", 10) || 3000;
 
 Bun.serve<ConnectionData>({
   port: PORT,

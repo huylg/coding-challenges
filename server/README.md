@@ -18,3 +18,10 @@
 - Send an answer message:
   - `{"type":"answer","quizId":"quiz-1","username":"alex","questionId":"q1","answer":"cat","isCorrect":true}`
 - Expect `leaderboard_update` messages with updated scores.
+
+### Deployment (Railway)
+- Create a new Railway project and add a service from this repo.
+- Set the service root directory to `server/` and use the `Dockerfile`.
+- Railway provides `PORT` automatically; the server binds to it.
+- After deploy, connect with any WebSocket client to
+  `wss://<railway-domain>`.

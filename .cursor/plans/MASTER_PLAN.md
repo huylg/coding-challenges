@@ -63,6 +63,11 @@
 
 - Document setup, run, and simple manual test steps for server and client.
 
+6. **Deployment (Railway)**
+
+- Add Dockerfile for `server/` and document Railway deploy steps.
+- Update server to honor `PORT` from environment for Railway.
+
 ## Key quality considerations
 
 - Scalability: in-memory session cache with periodic persistence; discuss horizontal scale limits.
@@ -101,3 +106,4 @@ Todos
 - client-core: Implement Flutter mobile client and live leaderboard
 - ai-log: Add AI collaboration notes and verification steps
 - docs: Add run instructions and test notes
+- deploy-railway: Add Railway deploy steps for server
