@@ -8,6 +8,9 @@
 - Start the server: `bun run src/index.ts`
 - Expect log output like: `{"event":"server_started","port":3000,...}`
 
+### Tests
+- Run all tests: `bun test`
+
 ### Manual check
 - Connect with any WebSocket client to `ws://localhost:3000`
 - Send a join message:
