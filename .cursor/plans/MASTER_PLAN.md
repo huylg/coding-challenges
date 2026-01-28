@@ -73,8 +73,22 @@
 
 ## Testing approach
 
-- Server: lightweight unit tests for scoring and leaderboard ordering.
-- Client: manual QA checklist for join, answer, and live updates.
+- Server test suite:
+- Unit tests: `db.ts` helpers (session/participant creation, answer insert,
+  score increment, leaderboard ordering).
+- Integration tests: WebSocket join/answer flows, broadcast updates, quiz
+  mismatch, parse/validation errors, disconnect cleanup.
+- Key cases: score rules (+1 correct, +0 incorrect), tie-break by `joined_at`,
+  idempotent joins, cross-quiz isolation.
+- Client test suite:
+- Unit tests: model parsing, WebSocket client connect/send/close, view model
+  state transitions and reconnection backoff.
+- Widget tests: status banner states, join/answer sections, leaderboard empty
+  and populated renders, button wiring.
+- Integration: end-to-end join → answer → leaderboard update,
+  reconnect after disconnect.
+- Key cases: input validation, error banner display, leaderboard update handling,
+  accessibility semantics for status/leaderboard.
 
 ## Mermaid diagram (planned)
 

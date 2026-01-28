@@ -5,6 +5,15 @@ This project used Cursor AI to accelerate system design, server scaffolding,
 and Flutter UI composition. The notes below list AI-assisted sections and the
 verification steps taken.
 
+## Testing strategy
+- Server tests: unit tests for `db.ts` helpers and leaderboard ordering, plus
+  integration tests for WebSocket join/answer flows, broadcast updates, and
+  error handling (parse errors, quiz mismatch).
+- Client tests: unit tests for model parsing, WebSocket client lifecycle, and
+  view model state transitions; widget tests for status banner, join/answer
+  sections, and leaderboard rendering; optional integration test for full quiz
+  flow with reconnect.
+
 ## Entries
 ### Bun WebSocket server (`server/src/index.ts`)
 - Tool + task: Cursor AI drafted the WebSocket lifecycle and message routing.
