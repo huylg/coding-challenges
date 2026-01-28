@@ -25,3 +25,10 @@
 - Railway provides `PORT` automatically; the server binds to it.
 - After deploy, connect with any WebSocket client to
   `wss://<railway-domain>`.
+
+#### Deploy via Railway CLI
+```bash
+# From repo root
+railway up server --path-as-root
+railway domain --service realtime-quiz-server
+```
