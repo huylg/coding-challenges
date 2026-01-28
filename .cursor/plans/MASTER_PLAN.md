@@ -18,21 +18,21 @@
 
 ## Planned structure (new files)
 
-- Server (Bun): [` `````````server/````````` `](server/)
+- Server (Bun): [`server/`](../../server/)
 - `server/src/index.ts` WebSocket entrypoint, session routing
 - `server/src/db.ts` sqlite connection and queries
 - `server/src/quiz_service.ts` scoring + leaderboard logic
 - `server/src/models.ts` shared types
 - `server/README.md` run instructions
-- Client (Flutter): [` `````````client/````````` `](client/)
+- Client (Flutter): [`client/`](../../client/)
 - `client/lib/main.dart` app entry, routing
 - `client/lib/data/ws_client.dart` WebSocket client
 - `client/lib/models/quiz_models.dart` data structures
 - `client/lib/ui/quiz_screen.dart` join/answer UI
 - `client/lib/ui/leaderboard_widget.dart` real-time list
 - `client/README.md` run instructions
-- Design doc: [` `````````SYSTEM_DESIGN.md````````` `](SYSTEM_DESIGN.md)
-- AI collaboration log: [` `````````AI_COLLABORATION.md````````` `](AI_COLLABORATION.md)
+- Design doc: [`SYSTEM_DESIGN.md`](../../SYSTEM_DESIGN.md)
+- AI collaboration log: [`AI_COLLABORATION.md`](../../AI_COLLABORATION.md)
 
 ## Implementation steps
 
