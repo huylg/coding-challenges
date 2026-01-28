@@ -18,6 +18,14 @@ verification steps taken.
 
 ## Entries
 
+### Demo video transcript (`docs/conversations/cursor_demo_video_transcript.md`)
+
+- Tool + task: Cursor AI drafted a 7–8 minute demo transcript aligned with the
+  assignment requirements and repo artifacts.
+- Prompt summary: "Explore docs and generate a demo video transcript."
+- Verification: cross-checked the outline against `docs/REQUIREMENT.md`, ensured
+  referenced files exist, and verified run/test commands match the repo.
+
 ### Bun WebSocket server (`server/src/index.ts`)
 
 - Tool + task: Cursor AI drafted the WebSocket lifecycle and message routing.
