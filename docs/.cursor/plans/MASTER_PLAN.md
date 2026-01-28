@@ -65,7 +65,7 @@
 
 6. **Deployment (Railway)**
 
-- Add Dockerfile for `server/` and document Railway deploy steps.
+- Add Dockerfile for `server/` and document Railway deploy steps for server.
 - Update server to honor `PORT` from environment for Railway.
 
 ## Key quality considerations
