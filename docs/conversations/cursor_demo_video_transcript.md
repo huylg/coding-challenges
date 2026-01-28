@@ -18,7 +18,7 @@ Below is a ready-to-read demo video transcript (about 7–8 minutes). It aligns 
 ## Demo Video Transcript (7–8 min)
 
 **0:00–0:30 — Introduction**  
-Hi, I’m [Your Name]. I’m presenting my Real-Time Vocabulary Quiz coding challenge submission. I built a Flutter client and a Bun WebSocket server with sqlite persistence, and documented the system design and AI collaboration process in `docs/`.
+Hi, I’m [Your Name]. I’m presenting my Real-Time Math Quiz coding challenge submission. I built a Flutter client and a Bun WebSocket server with sqlite persistence, and documented the system design and AI collaboration process in `docs/`.
 
 **0:30–1:15 — Assignment Overview**  
 The assignment is to design and implement a real-time quiz component where multiple users can join a quiz session, submit answers, and see a live leaderboard. It also requires documenting AI collaboration and showing verification steps for AI-assisted output.
