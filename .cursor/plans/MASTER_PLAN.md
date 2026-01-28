@@ -1,25 +1,3 @@
----
-name: RealtimeQuizMasterPlan
-overview: "Deliver a full-stack real-time quiz system: Bun WebSocket server with sqlite persistence and a Flutter mobile client, plus required design docs and AI-collaboration evidence."
-todos:
-  - id: design-doc
-    content: Draft SYSTEM_DESIGN.md with diagram, flow, AI usage
-    status: completed
-  - id: server-core
-    content: Implement Bun WebSocket server + sqlite persistence
-    status: completed
-  - id: client-core
-    content: Implement Flutter mobile client and live leaderboard
-    status: completed
-  - id: ai-log
-    content: Add AI collaboration notes and verification steps
-    status: completed
-  - id: docs
-    content: Add run instructions and test notes
-    status: completed
-isProject: false
----
-
 # Real-Time Quiz Master Plan
 
 ## Scope and deliverables
