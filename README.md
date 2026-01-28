@@ -3,13 +3,13 @@
 ## What is included
 - Bun WebSocket server with sqlite persistence.
 - Flutter mobile client with join flow and live leaderboard.
-- System design and AI collaboration notes.
+- Project documentation in `docs/`.
 
 ## Run the server
 ```bash
 cd server
 bun install
-bun run src/index.ts
+bun run start
 ```
 
 ## Run the client
