@@ -81,8 +81,8 @@ I see a `server_started` log, confirming it’s listening.
 - Tap Join; the leaderboard renders immediately.
 
 4) Submit an answer:  
-- Use the “Mark as correct” toggle and submit an answer.  
-- The score increments and the leaderboard updates live.
+- Submit an answer
+- The score increments for correct answers and the leaderboard updates live.
 
 5) Open a second client:  
 - Join the same quiz with a different username.  
