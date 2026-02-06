@@ -19,9 +19,12 @@ class QuizViewModel extends ChangeNotifier {
   QuizViewModel({QuizWebSocketClient? client})
       : _client = client ?? QuizWebSocketClient();
 
+  static const int countdownDuration = 30;
+
   final QuizWebSocketClient _client;
   StreamSubscription<Map<String, dynamic>>? _subscription;
   Timer? _reconnectTimer;
+  Timer? _countdownTimer;
   int _reconnectAttempts = 0;
 
   ConnectionStatus status = ConnectionStatus.disconnected;
@@ -32,6 +35,7 @@ class QuizViewModel extends ChangeNotifier {
   List<LeaderboardEntry> leaderboard = const [];
   QuestionMessage? currentQuestion;
   String? selectedOptionId;
+  int remainingSeconds = countdownDuration;
 
   bool get isInSession => quizId != null && username != null;
 
@@ -70,6 +74,7 @@ class QuizViewModel extends ChangeNotifier {
     if (question == null || optionId == null || optionId.isEmpty) {
       return;
     }
+    _cancelCountdown();
     _client.send({
       "type": "answer",
       "quizId": quizId,
@@ -83,6 +88,7 @@ class QuizViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _cancelCountdown();
     _reconnectTimer?.cancel();
     _subscription?.cancel();
     _client.close();
@@ -155,10 +161,12 @@ class QuizViewModel extends ChangeNotifier {
       final question = QuestionMessage.fromJson(message);
       currentQuestion = question;
       selectedOptionId = null;
+      _startCountdown();
       notifyListeners();
       return;
     }
     if (type == "quiz_complete") {
+      _cancelCountdown();
       currentQuestion = null;
       selectedOptionId = null;
       notifyListeners();
@@ -169,6 +177,45 @@ class QuizViewModel extends ChangeNotifier {
       errorMessage = message["message"]?.toString() ?? "Server error.";
       notifyListeners();
     }
+  }
+
+  void _startCountdown() {
+    _cancelCountdown();
+    remainingSeconds = countdownDuration;
+    _countdownTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) {
+        remainingSeconds -= 1;
+        if (remainingSeconds <= 0) {
+          remainingSeconds = 0;
+          _cancelCountdown();
+          _autoSubmitNoAnswer();
+        }
+        notifyListeners();
+      },
+    );
+  }
+
+  void _cancelCountdown() {
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
+  }
+
+  /// Sends an answer with an empty optionId when the countdown
+  /// expires, letting the server treat it as an incorrect answer.
+  void _autoSubmitNoAnswer() {
+    final question = currentQuestion;
+    if (!isInSession || question == null) {
+      return;
+    }
+    _client.send({
+      "type": "answer",
+      "quizId": quizId,
+      "username": username,
+      "questionId": question.questionId,
+      "optionId": "",
+    });
+    selectedOptionId = null;
   }
 
   Uri? _parseServerUri(String serverUrl) {

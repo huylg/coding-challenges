@@ -49,6 +49,7 @@ export interface QuestionMessage {
   questionId: string;
   prompt: string;
   options: QuestionOption[];
+  questionSentAt: string;
 }
 
 export interface QuizCompleteMessage {
