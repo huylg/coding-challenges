@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import type { Database } from "bun:sqlite";
 import { createDatabase, seedQuestions } from "../src/db";
-import { handleAnswer, handleJoin } from "../src/quiz_service";
+import { handleAnswer, handleJoin, scoreAnswer } from "../src/quiz_service";
 
 let db: Database;
 
@@ -61,4 +61,52 @@ test("handleAnswer creates participant for new user", () => {
   expect(result.leaderboard).toEqual([
     { username: "bob", score: 0 },
   ]);
+});
+
+test("scoreAnswer returns 2 for correct answer within 5 seconds", () => {
+  expect(scoreAnswer(true, 3000)).toBe(2);
+});
+
+test("scoreAnswer returns 2 for correct answer at exactly 5 seconds", () => {
+  expect(scoreAnswer(true, 5000)).toBe(2);
+});
+
+test("scoreAnswer returns 1 for correct answer after 5 seconds", () => {
+  expect(scoreAnswer(true, 8000)).toBe(1);
+});
+
+test("scoreAnswer returns 0 for incorrect answer regardless of time", () => {
+  expect(scoreAnswer(false, 2000)).toBe(0);
+  expect(scoreAnswer(false, 8000)).toBe(0);
+});
+
+test("handleAnswer awards double points for fast correct answer", () => {
+  const sentAt = Date.now();
+  const result = handleAnswer(
+    db,
+    "quiz-1",
+    "alice",
+    "q1",
+    "q1_b",
+    sentAt
+  );
+  expect(result.isCorrect).toBe(true);
+  expect(result.leaderboard).toEqual([
+    { username: "alice", score: 2 },
+  ]);
+});
+
+test("handleAnswer awards 0 points for empty optionId", () => {
+  const result = handleAnswer(
+    db,
+    "quiz-1",
+    "alice",
+    "q1",
+    ""
+  );
+  expect(result.isCorrect).toBe(false);
+  expect(result.leaderboard).toEqual([
+    { username: "alice", score: 0 },
+  ]);
+  expect(result.question?.questionId).toBe("q2");
 });

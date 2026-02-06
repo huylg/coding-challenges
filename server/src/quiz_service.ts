@@ -61,14 +61,21 @@ export const handleJoin = (
   return { leaderboard, question };
 };
 
-const scoreAnswer = (isCorrect: boolean) => (isCorrect ? 1 : 0);
+export const scoreAnswer = (
+  isCorrect: boolean,
+  elapsedMs: number,
+): number => {
+  if (!isCorrect) return 0;
+  return elapsedMs <= 5000 ? 2 : 1;
+};
 
 export const handleAnswer = (
   db: Database,
   quizId: string,
   username: string,
   questionId: string,
-  optionId: string
+  optionId: string,
+  questionSentAt?: number,
 ): {
   leaderboard: LeaderboardEntry[];
   question: QuestionPayload | null;
@@ -77,9 +84,12 @@ export const handleAnswer = (
   ensureSession(db, quizId);
   ensureParticipant(db, quizId, username);
   ensureParticipantProgress(db, quizId, username);
-  const isCorrect = isOptionCorrect(db, questionId, optionId);
+  const isCorrect =
+    optionId !== "" && isOptionCorrect(db, questionId, optionId);
   insertAnswer(db, quizId, username, questionId, optionId, isCorrect);
-  const delta = scoreAnswer(isCorrect);
+  const elapsedMs =
+    questionSentAt != null ? Date.now() - questionSentAt : Infinity;
+  const delta = scoreAnswer(isCorrect, elapsedMs);
   incrementScore(db, quizId, username, delta);
   const currentIndex = getParticipantProgress(db, quizId, username);
   const currentQuestion = getQuestionByIndex(db, currentIndex);

@@ -19,6 +19,7 @@ import type { ServerWebSocket } from "bun";
 interface ConnectionData {
   quizId?: string;
   username?: string;
+  questionSentAt?: number;
 }
 
 const db = createDatabase();
@@ -95,9 +96,15 @@ const broadcastLeaderboard = (
 
 const sendQuestion = (
   ws: ServerWebSocket<ConnectionData>,
-  payload: Omit<QuestionMessage, "type">
+  payload: Omit<QuestionMessage, "type" | "questionSentAt">
 ) => {
-  sendMessage(ws, { type: "question", ...payload });
+  const now = Date.now();
+  ws.data.questionSentAt = now;
+  sendMessage(ws, {
+    type: "question",
+    ...payload,
+    questionSentAt: new Date(now).toISOString(),
+  });
 };
 
 const sendQuizComplete = (
@@ -125,7 +132,7 @@ const isAnswerMessage = (message: ClientMessage): message is AnswerMessage =>
   typeof message.quizId === "string" &&
   typeof message.username === "string" &&
   typeof message.questionId === "string" &&
-  typeof message.optionId === "string";
+  typeof (message as AnswerMessage).optionId === "string";
 
 const handleClientMessage = (
   ws: ServerWebSocket<ConnectionData>,
@@ -165,7 +172,8 @@ const handleClientMessage = (
       message.quizId,
       message.username,
       message.questionId,
-      message.optionId
+      message.optionId,
+      ws.data.questionSentAt
     );
     broadcastLeaderboard(message.quizId, leaderboard);
     if (question) {

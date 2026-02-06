@@ -70,6 +70,9 @@ class _QuizScreenState extends State<QuizScreen> {
                     _QuestionSection(
                       question: _viewModel.currentQuestion!,
                       selectedOptionId: _viewModel.selectedOptionId,
+                      remainingSeconds: _viewModel.remainingSeconds,
+                      countdownDuration:
+                          QuizViewModel.countdownDuration,
                       onOptionSelected: _viewModel.selectOption,
                       onSubmit: _viewModel.submitSelectedAnswer,
                     )
@@ -198,30 +201,56 @@ class _QuestionSection extends StatelessWidget {
   const _QuestionSection({
     required this.question,
     required this.selectedOptionId,
+    required this.remainingSeconds,
+    required this.countdownDuration,
     required this.onOptionSelected,
     required this.onSubmit,
   });
 
   final QuestionMessage question;
   final String? selectedOptionId;
+  final int remainingSeconds;
+  final int countdownDuration;
   final ValueChanged<String?> onOptionSelected;
   final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isSubmitEnabled = selectedOptionId != null;
+    final elapsedSeconds = countdownDuration - remainingSeconds;
+    final isDoublePoints = elapsedSeconds < 5;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          "Question",
-          style: Theme.of(context).textTheme.titleMedium,
+        _CountdownIndicator(
+          remainingSeconds: remainingSeconds,
+          countdownDuration: countdownDuration,
         ),
         const SizedBox(height: 8),
-        Text(
-          question.prompt,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
+        if (isDoublePoints)
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.amber.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              "Double Points!",
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: Colors.amber.shade800,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        const SizedBox(height: 12),
+        Text("Question", style: theme.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Text(question.prompt, style: theme.textTheme.bodyLarge),
         const SizedBox(height: 12),
         ...question.options.map(
           (option) => RadioListTile<String>(
@@ -238,6 +267,52 @@ class _QuestionSection extends StatelessWidget {
           child: const Text("Submit answer"),
         ),
       ],
+    );
+  }
+}
+
+class _CountdownIndicator extends StatelessWidget {
+  const _CountdownIndicator({
+    required this.remainingSeconds,
+    required this.countdownDuration,
+  });
+
+  final int remainingSeconds;
+  final int countdownDuration;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final progress = remainingSeconds / countdownDuration;
+    final Color color;
+    if (remainingSeconds <= 5) {
+      color = theme.colorScheme.error;
+    } else if (remainingSeconds <= 10) {
+      color = Colors.orange;
+    } else {
+      color = theme.colorScheme.primary;
+    }
+    return Semantics(
+      label: "$remainingSeconds seconds remaining",
+      child: Column(
+        children: [
+          Text(
+            "$remainingSeconds",
+            style: theme.textTheme.headlineLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          LinearProgressIndicator(
+            value: progress,
+            color: color,
+            backgroundColor: color.withOpacity(0.15),
+            minHeight: 6,
+            borderRadius: BorderRadius.circular(3),
+          ),
+        ],
+      ),
     );
   }
 }
