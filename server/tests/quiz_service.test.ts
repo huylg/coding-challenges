@@ -110,3 +110,72 @@ test("handleAnswer awards 0 points for empty optionId", () => {
   ]);
   expect(result.question?.questionId).toBe("q2");
 });
+
+test("handleAnswer keeps score/progress consistency after one answer", () => {
+  const sentAt = Date.now() - 1000;
+  const result = handleAnswer(
+    db,
+    "quiz-1",
+    "alice",
+    "q1",
+    "q1_b",
+    sentAt
+  );
+  expect(result.isCorrect).toBe(true);
+  expect(result.leaderboard).toEqual([
+    { username: "alice", score: 2 },
+  ]);
+  expect(result.question?.questionId).toBe("q2");
+
+  const answerRow = db
+    .prepare(
+      `
+      SELECT question_id, answer_text, is_correct
+      FROM answers
+      WHERE quiz_id = ? AND username = ?
+    `
+    )
+    .get("quiz-1", "alice") as {
+    question_id: string;
+    answer_text: string;
+    is_correct: number;
+  };
+  expect(answerRow.question_id).toBe("q1");
+  expect(answerRow.answer_text).toBe("q1_b");
+  expect(answerRow.is_correct).toBe(1);
+
+  const progressRow = db
+    .prepare(
+      `
+      SELECT question_index
+      FROM participant_progress
+      WHERE quiz_id = ? AND username = ?
+    `
+    )
+    .get("quiz-1", "alice") as { question_index: number };
+  expect(progressRow.question_index).toBe(1);
+});
+
+test("handleAnswer out-of-order wrong answer does not advance progress", () => {
+  handleJoin(db, "quiz-1", "alice");
+  const result = handleAnswer(
+    db,
+    "quiz-1",
+    "alice",
+    "q2",
+    "q2_a"
+  );
+  expect(result.isCorrect).toBe(false);
+  expect(result.question?.questionId).toBe("q1");
+
+  const progressRow = db
+    .prepare(
+      `
+      SELECT question_index
+      FROM participant_progress
+      WHERE quiz_id = ? AND username = ?
+    `
+    )
+    .get("quiz-1", "alice") as { question_index: number };
+  expect(progressRow.question_index).toBe(0);
+});

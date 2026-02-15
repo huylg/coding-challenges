@@ -1,0 +1,122 @@
+{
+  "mode": "ws",
+  "startedAt": "2026-02-15T04:03:16.990Z",
+  "finishedAt": "2026-02-15T04:04:26.456Z",
+  "thresholds": {
+    "maxErrorRate": 0.01,
+    "maxP95Ms": 200
+  },
+  "maxSustainableRps": 100,
+  "stages": [
+    {
+      "mode": "ws",
+      "stage": 1,
+      "targetRps": 100,
+      "actualRps": 99.93,
+      "total": 1499,
+      "ok": 1499,
+      "errors": 0,
+      "errorRate": 0,
+      "latencyMs": {
+        "p50": 4.97,
+        "p95": 7.43,
+        "p99": 8.59,
+        "max": 17.24
+      },
+      "pass": true,
+      "durationMs": 15000,
+      "notes": {
+        "joinOps": 150,
+        "answerOps": 1349,
+        "createJoinOps": 150,
+        "reuseJoinOps": 0,
+        "activeClients": 250,
+        "timeouts": 0,
+        "protocolErrors": 0
+      }
+    },
+    {
+      "mode": "ws",
+      "stage": 2,
+      "targetRps": 150,
+      "actualRps": 138.2,
+      "total": 2073,
+      "ok": 1669,
+      "errors": 404,
+      "errorRate": 0.1949,
+      "latencyMs": {
+        "p50": 893.19,
+        "p95": 3198.06,
+        "p99": 3257.98,
+        "max": 3294.55
+      },
+      "pass": false,
+      "durationMs": 15000,
+      "notes": {
+        "joinOps": 200,
+        "answerOps": 1873,
+        "createJoinOps": 200,
+        "reuseJoinOps": 0,
+        "activeClients": 450,
+        "timeouts": 404,
+        "protocolErrors": 0
+      }
+    },
+    {
+      "mode": "ws",
+      "stage": 3,
+      "targetRps": 200,
+      "actualRps": 137.67,
+      "total": 2065,
+      "ok": 831,
+      "errors": 1234,
+      "errorRate": 0.5976,
+      "latencyMs": {
+        "p50": 3037.59,
+        "p95": 3211.77,
+        "p99": 3316.79,
+        "max": 3418.64
+      },
+      "pass": false,
+      "durationMs": 15000,
+      "notes": {
+        "joinOps": 187,
+        "answerOps": 1878,
+        "createJoinOps": 187,
+        "reuseJoinOps": 0,
+        "activeClients": 637,
+        "timeouts": 1234,
+        "protocolErrors": 0
+      }
+    }
+  ],
+  "config": {
+    "stageRps": [
+      100,
+      150,
+      200
+    ],
+    "stageDurationMs": 15000,
+    "warmupMs": 5000,
+    "thresholds": {
+      "maxErrorRate": 0.01,
+      "maxP95Ms": 200
+    },
+    "concurrency": 200,
+    "traffic": "join=0.1,answer=0.90",
+    "dbPath": "/var/folders/jg/4x6svnpn0kb3t0g4khkrmkh80000gp/T/quiz-stress-ws-1771128196989-d2153c.sqlite"
+  },
+  "resources": {
+    "rssMbStart": 48.44,
+    "rssMbEnd": 101.48,
+    "rssMbPeak": 152.78,
+    "cpuUserMs": 46292.36,
+    "cpuSystemMs": 7849.29
+  },
+  "runtime": {
+    "bunVersion": "1.3.9",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpus": 11
+  }
+}
