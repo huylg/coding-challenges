@@ -283,14 +283,17 @@ export const incrementScore = (
   username: string,
   delta: number
 ) => {
-  const update = db.prepare(
-    "UPDATE participants SET score = score + ? WHERE quiz_id = ? AND username = ?"
+  const stmt = db.prepare(
+    `
+      UPDATE participants
+      SET score = score + ?
+      WHERE quiz_id = ? AND username = ?
+      RETURNING score
+    `
   );
-  update.run(delta, quizId, username);
-  const select = db.prepare(
-    "SELECT score FROM participants WHERE quiz_id = ? AND username = ?"
-  );
-  const row = select.get(quizId, username) as { score: number } | undefined;
+  const row = stmt.get(delta, quizId, username) as
+    | { score: number }
+    | undefined;
   return row?.score ?? 0;
 };
 

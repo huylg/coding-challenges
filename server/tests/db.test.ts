@@ -64,6 +64,15 @@ test("incrementScore returns 0 for missing participant", () => {
   expect(score).toBe(0);
 });
 
+test("incrementScore returns cumulative score with RETURNING", () => {
+  ensureSession(db, "quiz-1");
+  ensureParticipant(db, "quiz-1", "bob");
+  const first = incrementScore(db, "quiz-1", "bob", 2);
+  const second = incrementScore(db, "quiz-1", "bob", 3);
+  expect(first).toBe(2);
+  expect(second).toBe(5);
+});
+
 test("insertAnswer persists answer with correctness", () => {
   ensureSession(db, "quiz-1");
   ensureParticipant(db, "quiz-1", "alice");

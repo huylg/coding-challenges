@@ -76,22 +76,26 @@ export const handleAnswer = (
   question: QuestionPayload | null;
   isCorrect: boolean;
 } => {
-  ensureSession(db, quizId);
-  ensureParticipant(db, quizId, username);
-  ensureParticipantProgress(db, quizId, username);
-  const isCorrect =
-    optionId !== "" && isOptionCorrect(db, questionId, optionId);
-  insertAnswer(db, quizId, username, questionId, optionId, isCorrect);
-  const elapsedMs =
-    questionSentAt != null ? Date.now() - questionSentAt : Infinity;
-  const delta = scoreAnswer(isCorrect, elapsedMs);
-  incrementScore(db, quizId, username, delta);
-  const currentIndex = getParticipantProgress(db, quizId, username);
-  const currentQuestion = getQuestionByIndex(db, currentIndex);
-  let nextIndex = currentIndex;
-  if (currentQuestion?.id === questionId) {
-    nextIndex = advanceParticipantProgress(db, quizId, username);
-  }
+  const runAnswerMutation = db.transaction(() => {
+    ensureSession(db, quizId);
+    ensureParticipant(db, quizId, username);
+    ensureParticipantProgress(db, quizId, username);
+    const isCorrect =
+      optionId !== "" && isOptionCorrect(db, questionId, optionId);
+    insertAnswer(db, quizId, username, questionId, optionId, isCorrect);
+    const elapsedMs =
+      questionSentAt != null ? Date.now() - questionSentAt : Infinity;
+    const delta = scoreAnswer(isCorrect, elapsedMs);
+    incrementScore(db, quizId, username, delta);
+    const currentIndex = getParticipantProgress(db, quizId, username);
+    const currentQuestion = getQuestionByIndex(db, currentIndex);
+    let nextIndex = currentIndex;
+    if (currentQuestion?.id === questionId) {
+      nextIndex = advanceParticipantProgress(db, quizId, username);
+    }
+    return { isCorrect, nextIndex };
+  });
+  const { isCorrect, nextIndex } = runAnswerMutation();
   const leaderboard = getLeaderboard(db, quizId);
   const nextQuestion = buildQuestionPayload(db, nextIndex);
   return { leaderboard, question: nextQuestion, isCorrect };
