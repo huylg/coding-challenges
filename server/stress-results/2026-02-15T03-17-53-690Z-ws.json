@@ -1,0 +1,65 @@
+{
+  "mode": "ws",
+  "startedAt": "2026-02-15T03:17:52.421Z",
+  "finishedAt": "2026-02-15T03:17:53.690Z",
+  "thresholds": {
+    "maxErrorRate": 0.01,
+    "maxP95Ms": 200
+  },
+  "maxSustainableRps": 10,
+  "stages": [
+    {
+      "stage": 1,
+      "targetRps": 10,
+      "actualRps": 9,
+      "total": 9,
+      "ok": 9,
+      "errors": 0,
+      "errorRate": 0,
+      "latencyMs": {
+        "p50": 1.37,
+        "p95": 3.83,
+        "p99": 3.83,
+        "max": 3.83
+      },
+      "pass": true,
+      "durationMs": 1000,
+      "notes": {
+        "joinOps": 2,
+        "answerOps": 7,
+        "createJoinOps": 2,
+        "reuseJoinOps": 0,
+        "activeClients": 7,
+        "timeouts": 0,
+        "protocolErrors": 0
+      }
+    }
+  ],
+  "config": {
+    "stageRps": [
+      10
+    ],
+    "stageDurationMs": 1000,
+    "warmupMs": 200,
+    "thresholds": {
+      "maxErrorRate": 0.01,
+      "maxP95Ms": 200
+    },
+    "concurrency": 16,
+    "traffic": "join=0.1,answer=0.90",
+    "dbPath": "/var/folders/jg/4x6svnpn0kb3t0g4khkrmkh80000gp/T/quiz-stress-ws-1771125471187-d2af44.sqlite"
+  },
+  "resources": {
+    "rssMbStart": 39.63,
+    "rssMbEnd": 41.28,
+    "rssMbPeak": 41.28,
+    "cpuUserMs": 29.87,
+    "cpuSystemMs": 11.92
+  },
+  "runtime": {
+    "bunVersion": "1.3.9",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpus": 11
+  }
+}

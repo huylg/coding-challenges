@@ -26,5 +26,5 @@ flutter run
 - Open a second client and ensure the leaderboard syncs.
 
 ## Demo
-- Part 1: https://drive.google.com/file/d/1Jib_5SE1oMjfEVOa7f38BQlNDx_V3f5v/view?usp=sharing
-- Part 2: https://drive.google.com/file/d/16rgHwA5CP7GmNIhi8DARLWI2YdMCNGeL/view?usp=sharing
+- [Part 1](https://drive.google.com/file/d/1Jib_5SE1oMjfEVOa7f38BQlNDx_V3f5v/view?usp=sharing)
+- [Part 2](https://drive.google.com/file/d/16rgHwA5CP7GmNIhi8DARLWI2YdMCNGeL/view?usp=sharing)

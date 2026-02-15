@@ -1,0 +1,62 @@
+{
+  "mode": "service",
+  "startedAt": "2026-02-15T03:18:37.075Z",
+  "finishedAt": "2026-02-15T03:18:38.189Z",
+  "thresholds": {
+    "maxErrorRate": 0.01,
+    "maxP95Ms": 200
+  },
+  "maxSustainableRps": 10,
+  "stages": [
+    {
+      "mode": "service",
+      "stage": 1,
+      "targetRps": 10,
+      "actualRps": 9,
+      "total": 9,
+      "ok": 9,
+      "errors": 0,
+      "errorRate": 0,
+      "latencyMs": {
+        "p50": 2.17,
+        "p95": 3.6,
+        "p99": 3.6,
+        "max": 3.6
+      },
+      "pass": true,
+      "durationMs": 1000,
+      "notes": {
+        "joinOps": 1,
+        "answerOps": 8,
+        "users": 4
+      }
+    }
+  ],
+  "config": {
+    "stageRps": [
+      10
+    ],
+    "stageDurationMs": 1000,
+    "warmupMs": 100,
+    "thresholds": {
+      "maxErrorRate": 0.01,
+      "maxP95Ms": 200
+    },
+    "concurrency": 8,
+    "traffic": "join=0.1,answer=0.90",
+    "dbPath": "/var/folders/jg/4x6svnpn0kb3t0g4khkrmkh80000gp/T/quiz-stress-service-1771125517074-48ee21.sqlite"
+  },
+  "resources": {
+    "rssMbStart": 33.39,
+    "rssMbEnd": 34.41,
+    "rssMbPeak": 34.41,
+    "cpuUserMs": 49.1,
+    "cpuSystemMs": 21.55
+  },
+  "runtime": {
+    "bunVersion": "1.3.9",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpus": 11
+  }
+}

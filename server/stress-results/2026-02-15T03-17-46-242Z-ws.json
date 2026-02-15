@@ -1,0 +1,92 @@
+{
+  "mode": "ws",
+  "startedAt": "2026-02-15T03:17:41.599Z",
+  "finishedAt": "2026-02-15T03:17:46.241Z",
+  "thresholds": {
+    "maxErrorRate": 0.01,
+    "maxP95Ms": 200
+  },
+  "maxSustainableRps": 40,
+  "stages": [
+    {
+      "stage": 1,
+      "targetRps": 20,
+      "actualRps": 19.5,
+      "total": 39,
+      "ok": 39,
+      "errors": 0,
+      "errorRate": 0,
+      "latencyMs": {
+        "p50": 3.43,
+        "p95": 4.33,
+        "p99": 4.43,
+        "max": 4.43
+      },
+      "pass": true,
+      "durationMs": 2000,
+      "notes": {
+        "joinOps": 4,
+        "answerOps": 35,
+        "createJoinOps": 4,
+        "reuseJoinOps": 0,
+        "activeClients": 24,
+        "timeouts": 0,
+        "protocolErrors": 0
+      }
+    },
+    {
+      "stage": 2,
+      "targetRps": 40,
+      "actualRps": 39.5,
+      "total": 79,
+      "ok": 79,
+      "errors": 0,
+      "errorRate": 0,
+      "latencyMs": {
+        "p50": 3.57,
+        "p95": 4.43,
+        "p99": 5.64,
+        "max": 5.64
+      },
+      "pass": true,
+      "durationMs": 2000,
+      "notes": {
+        "joinOps": 8,
+        "answerOps": 71,
+        "createJoinOps": 8,
+        "reuseJoinOps": 0,
+        "activeClients": 32,
+        "timeouts": 0,
+        "protocolErrors": 0
+      }
+    }
+  ],
+  "config": {
+    "stageRps": [
+      20,
+      40
+    ],
+    "stageDurationMs": 2000,
+    "warmupMs": 500,
+    "thresholds": {
+      "maxErrorRate": 0.01,
+      "maxP95Ms": 200
+    },
+    "concurrency": 32,
+    "traffic": "join=0.1,answer=0.90",
+    "dbPath": "/var/folders/jg/4x6svnpn0kb3t0g4khkrmkh80000gp/T/quiz-stress-ws-1771125461598-e7c0b5.sqlite"
+  },
+  "resources": {
+    "rssMbStart": 37.55,
+    "rssMbEnd": 49.25,
+    "rssMbPeak": 49.25,
+    "cpuUserMs": 387.99,
+    "cpuSystemMs": 170.11
+  },
+  "runtime": {
+    "bunVersion": "1.3.9",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpus": 11
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "mode": "all",
+  "startedAt": "2026-02-15T03:17:51.187Z",
+  "finishedAt": "2026-02-15T03:17:53.692Z",
+  "runtime": {
+    "bunVersion": "1.3.9",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpus": 11
+  },
+  "outputs": {
+    "service": "/Users/huy.ly/personal/coding-challenges/server/stress-results/2026-02-15T03-17-52-417Z-service.json",
+    "ws": "/Users/huy.ly/personal/coding-challenges/server/stress-results/2026-02-15T03-17-53-690Z-ws.json"
+  },
+  "maxSustainableRps": {
+    "service": 10,
+    "ws": 10
+  },
+  "thresholds": {
+    "service": {
+      "maxErrorRate": 0.01,
+      "maxP95Ms": 200
+    },
+    "ws": {
+      "maxErrorRate": 0.01,
+      "maxP95Ms": 200
+    }
+  }
+}

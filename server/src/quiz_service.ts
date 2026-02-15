@@ -8,7 +8,6 @@ import {
   getOptionsForQuestion,
   getParticipantProgress,
   getQuestionByIndex,
-  getQuestionCount,
   incrementScore,
   insertAnswer,
   isOptionCorrect,
@@ -26,10 +25,6 @@ const buildQuestionPayload = (
   questionIndex: number
 ): QuestionPayload | null => {
   if (questionIndex < 0) {
-    return null;
-  }
-  const total = getQuestionCount(db);
-  if (questionIndex >= total) {
     return null;
   }
   const question = getQuestionByIndex(db, questionIndex);

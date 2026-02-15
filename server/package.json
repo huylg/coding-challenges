@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "start": "bun run src/index.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "stress:service": "bun run bench/quiz_service_stress.ts",
+    "stress:ws": "bun run bench/ws_stress.ts",
+    "stress:all": "bun run bench/stress_all.ts"
   }
 }

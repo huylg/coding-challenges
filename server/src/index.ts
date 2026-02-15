@@ -22,7 +22,7 @@ interface ConnectionData {
   questionSentAt?: number;
 }
 
-const db = createDatabase();
+const db = createDatabase({ dbPath: process.env.DB_PATH });
 seedQuestions(db);
 const sessions = new Map<string, Set<ServerWebSocket<ConnectionData>>>();
 
